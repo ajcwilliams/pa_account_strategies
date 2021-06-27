@@ -95,28 +95,11 @@ def update_quandl_unrolled():
         else:
             print(i + ' is up to date')
 
-def download_spot_fx_hist():
-    headers = {'Content-Type' : 'application/json'}
-    requestResponse = requests.get('https://api.tiingo.com/tiingo/fx/' + ticker + '/prices?startDate=' + 
-    '2019-06-30' + 'resampleFreq=daily&token=' + tiingo_apikey + ', headers=headers')
-    print(requestResponse)
-
-def all_intr_dollar_vol():
-    print('This is the method for calculation of the instrument dollar volatility')
-    instr_param = pd.read_csv(datalocation + 'instrument_parameters.csv', delimiter = ',', index_col = 0)
-    instr_list = instr_param.index.tolist()
-    ticker_list = pd.read_csv(datalocation + 'ticker_list.csv', delimiter = ',', index_col = 0)
-    ticker_list = ticker_list[(ticker_list['Symbol'].isin(instr_list)) & (ticker_list['Rule'] == 'EB')]
-    for i in ticker_list.index:
-        prc = pd.read_csv(datalocation + i + '.csv', delimiter = ',', index_col = 0)
-        prc = prc.set_index('date')
-        vol = pd.DataFrame(index =prc.index, columns = ['stdev', 'multi', 'usdstdev'] )
-        vol['stdev'] = prc['settle'].ewm(span = 64).std()
-        cc = ticker_list['Symbol'].loc[i]
-        vol['multi'] = instr_param['Multiplier'].loc[cc]
-        vol['usdstdev'] = vol['multi'] * vol['stdev']
-        vol.to_csv(datalocation + i + '_vols.csv')
-        print(vol)
+# def download_spot_fx_hist():
+#     headers = {'Content-Type' : 'application/json'}
+#     requestResponse = requests.get('https://api.tiingo.com/tiingo/fx/' + ticker + '/prices?startDate=' + 
+#     '2019-06-30' + 'resampleFreq=daily&token=' + tiingo_apikey + ', headers=headers')
+#     print(requestResponse)
 
 def beta_instr_waterfall():
     print('This is the method for calculation of the instrument allocation waterfall for the beta portfolio')
@@ -132,4 +115,3 @@ def market_alpha_portfolio(account_size, vol_target):
 
 #download_quandl_all_hist()
 #update_quandl_all()
-all_intr_dollar_vol()
